@@ -41,8 +41,11 @@ import os
 import tiktoken
 
 
+MODEL = os.environ.get("MODEL", "gemini-2.5-pro-preview-03-25")
+
 client = AsyncOpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),  # This is the default and can be omitted
+    api_key=os.environ.get("GEMINI_API_KEY"),  # This is the default and can be omitted
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
 
 
@@ -70,7 +73,7 @@ async def get_model_response(messages: list[dict[str, Any]]) -> str:
     
     chat_completion = await client.chat.completions.create(
         messages=messages, # type: ignore
-        model="gpt-4o",
+        model=MODEL,
     )
     return chat_completion.choices[0].message.content # type: ignore
 
@@ -87,7 +90,7 @@ class SimpleAgentSolver(PythonCodingSolver):
     async def _start_computer(self, task: ComputerTask) -> AsyncGenerator[ComputerInterface, None]:
         # replace with LocalCluster semantics
 
-        alcatraz_env = task_to_alcatraz_config(task, LocalConfig(pull_from_registry=False, local_network=True))
+        alcatraz_env = task_to_alcatraz_config(task, LocalConfig(pull_from_registry=False))
 
         async with alcatraz_env.build() as cluster:
             yield AlcatrazComputerInterface(cluster_value=cluster)
