@@ -44,6 +44,7 @@ async def main() -> None:
     print(report)
     # Export report.
     if LOG_DIR:
+        os.makedirs(LOG_DIR, exist_ok=True)
         with open(os.path.join(LOG_DIR, 'output.jsonl'), 'w') as f:
             f.write(json.dumps(report))
 
