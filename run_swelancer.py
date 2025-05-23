@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import json
 # Load environment before importing anything else
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,6 +13,8 @@ from nanoeval.evaluation import EvalSpec, RunnerArgs
 from nanoeval.recorder import dummy_recorder
 from nanoeval.setup import nanoeval_entrypoint
 from swelancer_agent import SimpleAgentSolver
+
+LOG_DIR = os.getenv('LOG_DIR')
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Run SWELancer evaluation')
@@ -38,6 +42,10 @@ async def main() -> None:
         )
     )
     print(report)
+    # Export report.
+    if LOG_DIR:
+        with open(os.path.join(LOG_DIR, 'output.jsonl'), 'w') as f:
+            f.write(json.dumps(report))
 
 
 if __name__ == "__main__":
