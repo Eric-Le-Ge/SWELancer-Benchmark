@@ -41,11 +41,9 @@ import os
 import tiktoken
 
 
-MODEL = os.environ.get("MODEL", "gemini-2.5-pro-preview-03-25")
-
 client = AsyncOpenAI(
-    api_key=os.environ.get("GEMINI_API_KEY"),  # This is the default and can be omitted
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+    api_key=os.environ.get("GEMINI_API_KEY"),
+    base_url=os.environ.get("API_BASE_URL")
 )
 
 
@@ -68,12 +66,12 @@ def trim_messages(messages: list[dict[str, Any]], max_tokens: int, model: str = 
         messages.pop(1)
     return messages
 
-async def get_model_response(messages: list[dict[str, Any]]) -> str:
-    messages = trim_messages(messages, 110000)
+async def get_model_response(messages: list[dict[str, Any]], model: str) -> str:
+    # messages = trim_messages(messages, 110000)
     
     chat_completion = await client.chat.completions.create(
         messages=messages, # type: ignore
-        model=MODEL,
+        model=model,
     )
     return chat_completion.choices[0].message.content # type: ignore
 
@@ -129,7 +127,7 @@ Please note that the Python code is not a Jupyter notebook; you must write a ful
                 print(messages)
 
                 for remaining_turns in range(max_turns, 0, -1):
-                    model_response = await get_model_response(messages)
+                    model_response = await get_model_response(messages, self.model)
                     print(model_response)
 
                     messages.append({"role": "assistant", "content": model_response})

@@ -24,12 +24,13 @@ def parse_args():
 async def main() -> None:
     args = parse_args()
     taskset = args.issue_ids if args.issue_ids else None
+    model = os.environ["MODEL"]
 
     report = await nanoeval.run(
         EvalSpec(
             # taskset is a list of ISSUE_IDs you wish to evaluate (e.g., ["123", "456_789"])
             eval=SWELancerEval(
-                solver=SimpleAgentSolver(model="gpt-4o"),
+                solver=SimpleAgentSolver(model=model),
                 taskset=taskset
             ),
             runner=RunnerArgs(
