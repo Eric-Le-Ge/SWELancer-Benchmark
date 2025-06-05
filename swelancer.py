@@ -297,7 +297,7 @@ class SWELancerEval(PythonCodingEval):
             "LC_ALL": "C.UTF-8",
         }
 
-        docker_image = "swelancer:latest"
+        docker_image = env_vars.get("INSTANCE_IMAGE", "swelancer:latest")
 
         swelancer_tasks = []
         i = 0 
